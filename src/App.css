@@ -1,0 +1,136 @@
+#root {
+ margin: 0;
+ padding: 0;
+}
+
+.Calc-Container {
+  position: absolute;
+  left: calc(50vw - (350px/2));
+  top: calc(50vh - (490px/1.5));
+  width: 350px;
+  height: 515px;
+  background-color: rgb(26, 26, 26);
+  border: 2px solid rgba(134, 56, 56, 0.877);
+  border-radius: 10px;
+}
+
+#display {
+  margin: 10px;
+  width: 330px;
+  height: 90px;
+  
+  background-color: rgba(62, 67, 68, 0.856);
+  border: 2px solid rgba(14, 23, 26, 0.856);
+  border-radius: 10px;
+}
+
+#text-display {
+  margin: 5px;
+  color: rgb(197, 197, 197);
+  font-size: 1.6rem;
+}
+
+.calc-keypad {
+  margin: 10px;
+  display: grid;
+  column-gap: 4px;
+  row-gap: 4px;
+  height: 390px;
+  width: 330px;
+  grid-template:
+    [one-left] "clear divide multiply minus" 1fr[one-right]
+    [two-left] "seven eight nine plus" 1fr [two-right]
+    [three-left] "four five six plus" 1fr [three-right]
+    [four-left] "one two three equals" 1fr [four-right]
+    [five-left] "zero zero decimal equals" 1fr [five-right]
+  ;
+ /*  background-color: rgba(20, 48, 59, 0.87); */
+ /*  border: 1px solid rgba(112, 128, 133, 0.856); */
+}
+
+.calc-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: rgba(112, 44, 44, 0.877);
+  border: 2px solid rgba(134, 56, 56, 0.877);
+  border-radius: 10px;
+}
+
+
+.calc-button:hover {
+  transform: scale(0.99);
+  background-color: rgba(128, 50, 50, 0.877);
+  border: 1px solid rgba(134, 56, 56, 0.877);
+}
+
+
+#clear {
+  grid-area: clear;
+}
+
+#divide {
+  grid-area: divide;
+}
+
+#multiply {
+  grid-area: multiply;
+}
+
+#minus {
+  grid-area: minus;
+}
+
+#seven {
+  grid-area: seven;
+}
+
+#eight {
+  grid-area: eight;
+}
+
+#nine {
+  grid-area: nine;
+}
+
+#add {
+  grid-area: plus;
+}
+
+#four {
+  grid-area: four;
+}
+
+#five {
+  grid-area: five;
+}
+
+#six {
+  grid-area: six;
+}
+
+#one {
+  grid-area: one;
+}
+
+#two {
+  grid-area: two;
+}
+
+#three {
+  grid-area: three;
+}
+
+#equals {
+  grid-area: equals;
+}
+
+#zero {
+  grid-area: zero;
+}
+
+#decimal {
+  grid-area: decimal;
+}
+
