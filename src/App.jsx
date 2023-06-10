@@ -14,55 +14,110 @@ export class App extends React.Component {
     this.KeyPad = React.createRef();
     this.Input = this.Input.bind(this);
     this.Solve = this.Solve.bind(this);
+
     this.state = {
-      input: "",
-      answer: "",
+      //input: "",
+      //answer: "",
+      display: 0,
+      waitingForOperand: true
     };
   }
+
+ 
   handleInput(e){
     //console.log("pressed " + e.target.id)
     if(e.target.id == "clear") {
-      //console.log("clear")
       this.setState({
-        answer: "",
-        input: "",
+       // answer: "",
+        //input: "",
+        display: 0,
+        waitingForOperand: true
       })
       return
     } else if(e.target.id == "equals"){
-      this.Solve(this.state.input)
+      this.Solve(this.state.display)
       return
-    }
-
-    this.Input(e.target.value)
+    } else if((/\d/).test(e.target.value)){
+      this.Input(e.target.value)
+      return
+    } else if(e.target.value == "*" || e.target.value == "/" || e.target.value == "-" || e.target.value == "+") {
+      InputOperand(e.target.value)
+    } else if (e.target.value == ".") {
+      InputDot(e.target.value)
+    };
+    //this.Input(e.target.value)
   }
+
   Input(value){
     //console.log(value)
     let val = value
-    let str = this.state.input + val
-    if(this.state.answer !== "" && isNaN(value)) {
-      this.setState({
-        input: this.state.answer + str,
-        answer: "",
-      })
-     /*  this.state.input = str
-      this.state.answer = "" */
-    } else {
-      this.setState({
-        input: str,
-        answer: "",
-      })
-      //this.state.input = str
-      console.log(this.state.input)
+    /* console.log(this.state.waitingForOperand) */
+
+   /*  if(this.state.input.slice(-1) == val){ //checks if the same input has been done twice
+      if(isNaN(val) && val !== "-"){
+        return
+      }
+    }; */
+
+   /*  if(val == "*" || val == "/" || val == "-" || val == "+") {
+      console.log("here")
+      this.state.waitingForOperand = false
+      InputOperand(val)
+    }; */
+
+    /* if(this.state.input.length === 1 && this.state.input.slice(0,1) == "0" && val == "0") { //makes sure numbers cant start with multiple zeros
+      return
+    };
+
+    if(val == "." && !this.state.waitingForOperand){ //makes sure no double decimals are present on each side of the operators.
+      this.InputDot()
+    }; */
+      let str = this.state.display + val
+        if(this.state.display !== "" && isNaN(value)) {
+          //this.state.display = this.state.answer + str
+          this.state.answer = ""
+          this.setState({
+            display: this.state.answer + str,
+          })
+          //console.log(this.state.answer, this.state.input)
+        } else {
+          /* this.state.input = str;
+          this.state.answer = ""; */
+          this.setState({
+            display: str,
+          })
+      //console.log(this.state.input, str)
     }
   }
+
+  InputDot(val) {
+    if(val == "." && !this.state.waitingForOperand){ //makes sure no double decimals are present on each side of the operators.
+      this.setState({
+        display: this.state.display + '.',
+        waitingForOperand: true
+      })
+    };
+  }
+
+  InputOperand(val) {
+    this.setState({
+      display: this.state.display + val
+    })
+    this.state.waitingForOperand = false
+  }
+
+  //5 - 9 + 5
   Solve(input){
     let eq = input
+    console.log(eq)
     let result = evaluate(eq)
-    this.setState( {
-      answer: result,
-      input: "",
+    this.state.answer = result;
+    this.state.input = "";
+    this.state.display = result;
+    this.setState({
+      display: result,
     })
-    
+    console.log(this.state.display)
   };
   
   KeyPressed(e) {
@@ -73,32 +128,39 @@ export class App extends React.Component {
       }
     }
   }
+
   KeyReleased(e) {
     
   }
+
   componentDidMount() {
     document.addEventListener('keydown', this.KeyPressed);
     document.addEventListener('keyup', this.KeyReleased);
   }
+
   componentWillUnmount() {
     document.removeEventListener('keydown', this.KeyPressed);
     document.removeEventListener('keyup', this.KeyReleased);
   }
+
   render() {
     return (
       <div className="App">
         <div className='Calc-Container'>
-            <div id='display'>
-              <div id='text-display'>
+            <div id='display-wrapper'>
+              <div id='display-box'>
+                <div id='display'>{this.state.display}</div>
+              </div>
+              {/* <div id='text-display'>
                 <div id="answer">{this.state.answer}</div>
                 <div id="input">{this.state.input}</div>
-              </div>
+              </div> */}
             </div>
               <div className='calc-keypad' ref={this.keyPad}>
               <button className='calc-button' id='clear'     value = 'CA' onClick={this.handleInput}>CA</button>
               <button className='calc-button' id='divide'    value = '/' onClick={this.handleInput}>/</button>
               <button className='calc-button' id='multiply'  value = '*' onClick={this.handleInput}>*</button>
-              <button className='calc-button' id='minus'     value = '-' onClick={this.handleInput}>-</button>
+              <button className='calc-button' id='subtract'     value = '-' onClick={this.handleInput}>-</button>
               <button className='calc-button' id='seven'     value = '7' onClick={this.handleInput}>7</button>
               <button className='calc-button' id='eight'     value = '8' onClick={this.handleInput}>8</button>
               <button className='calc-button' id='nine'      value = '9' onClick={this.handleInput}>9</button>
