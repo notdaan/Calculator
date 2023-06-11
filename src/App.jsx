@@ -3,7 +3,7 @@ import './App.css'
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Keys } from './keys';
-import {evaluate} from 'mathjs';
+import {evaluate, typeOf} from 'mathjs';
 
 export class App extends React.Component {
   constructor(props) {
@@ -14,24 +14,22 @@ export class App extends React.Component {
     this.KeyPad = React.createRef();
     this.Input = this.Input.bind(this);
     this.Solve = this.Solve.bind(this);
+    this.InputOperand = this.InputOperand.bind(this);
+    this.InputDot = this.InputDot.bind(this);
 
     this.state = {
-      //input: "",
-      //answer: "",
-      display: 0,
-      waitingForOperand: true
+      display: "0",
+      waitingForOperand: false,
+      beenSolved: false,
     };
   }
 
  
   handleInput(e){
-    //console.log("pressed " + e.target.id)
     if(e.target.id == "clear") {
       this.setState({
-       // answer: "",
-        //input: "",
         display: 0,
-        waitingForOperand: true
+        waitingForOperand: false
       })
       return
     } else if(e.target.id == "equals"){
@@ -41,53 +39,27 @@ export class App extends React.Component {
       this.Input(e.target.value)
       return
     } else if(e.target.value == "*" || e.target.value == "/" || e.target.value == "-" || e.target.value == "+") {
-      InputOperand(e.target.value)
+      this.InputOperand(e.target.value)
+      
     } else if (e.target.value == ".") {
-      InputDot(e.target.value)
+      //console.log("dot")
+      this.InputDot(e.target.value)
     };
-    //this.Input(e.target.value)
   }
 
   Input(value){
     //console.log(value)
     let val = value
-    /* console.log(this.state.waitingForOperand) */
-
-   /*  if(this.state.input.slice(-1) == val){ //checks if the same input has been done twice
-      if(isNaN(val) && val !== "-"){
-        return
-      }
-    }; */
-
-   /*  if(val == "*" || val == "/" || val == "-" || val == "+") {
-      console.log("here")
-      this.state.waitingForOperand = false
-      InputOperand(val)
-    }; */
-
-    /* if(this.state.input.length === 1 && this.state.input.slice(0,1) == "0" && val == "0") { //makes sure numbers cant start with multiple zeros
-      return
+    let str = ""
+    if(this.state.display == "0" || this.state.beenSolved) {
+      str = val
+    } else {
+      str = this.state.display + val
     };
-
-    if(val == "." && !this.state.waitingForOperand){ //makes sure no double decimals are present on each side of the operators.
-      this.InputDot()
-    }; */
-      let str = this.state.display + val
-        if(this.state.display !== "" && isNaN(value)) {
-          //this.state.display = this.state.answer + str
-          this.state.answer = ""
-          this.setState({
-            display: this.state.answer + str,
-          })
-          //console.log(this.state.answer, this.state.input)
-        } else {
-          /* this.state.input = str;
-          this.state.answer = ""; */
-          this.setState({
-            display: str,
-          })
-      //console.log(this.state.input, str)
-    }
+      this.setState({
+        display: str,
+        beenSolved: false
+      })
   }
 
   InputDot(val) {
@@ -100,24 +72,42 @@ export class App extends React.Component {
   }
 
   InputOperand(val) {
-    this.setState({
-      display: this.state.display + val
-    })
+    if(this.state.display !== "0"){
+      if(this.state.display.slice(-1) == val){ //checks if the same input has been done twice
+        if(isNaN(val) && val !== "-"){
+          return
+        }
+        if((/\-{2,}/).test(this.state.display.slice(-2))){
+          return
+        }
+      }
+      this.setState({
+        display: this.state.display + val,
+        beenSolved: false
+      })
+    } else {
+      this.setState({
+        display: val,
+        beenSolved: false
+      })
+    }
     this.state.waitingForOperand = false
   }
 
   //5 - 9 + 5
   Solve(input){
+    console.log( "equation : " + input)
     let eq = input
-    console.log(eq)
-    let result = evaluate(eq)
-    this.state.answer = result;
-    this.state.input = "";
-    this.state.display = result;
+    //console.log(eq)
+    let filEq = eq.match(/(\*|\+|\/|-)?(\.|\-)?\d+/g).join('');
+    let result = evaluate(filEq)
+    this.state.display = result.toString(),
     this.setState({
-      display: result,
+      display: result.toString(),
+      beenSolved: true
     })
-    console.log(this.state.display)
+    
+    console.log( "answer : " + this.state.display)
   };
   
   KeyPressed(e) {
@@ -151,10 +141,6 @@ export class App extends React.Component {
               <div id='display-box'>
                 <div id='display'>{this.state.display}</div>
               </div>
-              {/* <div id='text-display'>
-                <div id="answer">{this.state.answer}</div>
-                <div id="input">{this.state.input}</div>
-              </div> */}
             </div>
               <div className='calc-keypad' ref={this.keyPad}>
               <button className='calc-button' id='clear'     value = 'CA' onClick={this.handleInput}>CA</button>
